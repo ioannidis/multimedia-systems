@@ -5,7 +5,7 @@ def get_error_frame(frame1, frame2):
     return cv2.absdiff(frame1, frame2)
 
 
-video = cv2.VideoCapture('commercial.mp4')
+video = cv2.VideoCapture('commercial2.mp4')
 prev_frame = None
 
 while video.isOpened():
