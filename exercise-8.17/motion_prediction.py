@@ -3,6 +3,7 @@ import numpy as np
 from math import ceil
 
 window = 16
+k = 16
 
 
 def get_macroblocks(frame):
@@ -20,56 +21,119 @@ def get_macroblocks(frame):
 
     macroblocks = []
 
-    for r in range(0, width - window, window):
-        for c in range(0, height - window, window):
-            macroblock = padded_frame[r:r + window, c:c + window]
-            macroblocks.append(macroblock)
+    for w in range(0, width - window, window):
+        row = []
+        for h in range(0, height - window, window):
+            macroblock = padded_frame[w:w + window, h:h + window]
+            row.append(macroblock)
+        macroblocks.append(row)
 
     return macroblocks
 
 
-def get_sad(macroblock_prev, macroblock_next):
-    colors_sad = []
+def get_sad(m_prev, m_next):
+    value = 0
 
     for i in range(window):
         for j in range(window):
-            pixel_prev = macroblock_prev[i, j]
-            pixel_next = macroblock_next[i, j]
+            pixel_prev = m_prev[i, j]
+            pixel_next = m_next[i, j]
 
             for k in range(3):
-                color_prev = pixel_prev[k]
-                color_next = pixel_next[k]
-                sad = abs(color_next - color_prev)
-                colors_sad.append(sad)
+                color_prev = int(pixel_prev[k])
+                color_next = int(pixel_next[k])
+                value += abs(color_next - color_prev)
 
-    sums = sum(colors_sad)
-    count = len(colors_sad)
-    sad = sums / count
+    return value
 
-    return sad
+
+def get_best_match(ms_prev, next_row, next_col, m_next):
+    # Logarithmic search for motion estimation
+
+    step = k / 2
+    result = None
+
+    while step != 1:
+        neighbours = []
+
+        try:
+            neighbours.append([next_row + 1, next_col + 1, ms_prev[next_row + 1][next_col + 1]])
+        except IndexError:
+            pass
+
+        try:
+            neighbours.append([next_row + 1, next_col - 1, ms_prev[next_row + 1][next_col - 1]])
+        except IndexError:
+            pass
+
+        try:
+            neighbours.append([next_row - 1, next_col + 1, ms_prev[next_row - 1][next_col + 1]])
+        except IndexError:
+            pass
+
+        try:
+            neighbours.append([next_row - 1, next_col - 1, ms_prev[next_row - 1][next_col - 1]])
+        except IndexError:
+            pass
+
+        try:
+            neighbours.append([next_row + 1, next_col, ms_prev[next_row + 1][next_col]])
+        except IndexError:
+            pass
+
+        try:
+            neighbours.append([next_row, next_col - 1, ms_prev[next_row][next_col - 1]])
+        except IndexError:
+            pass
+
+        try:
+            neighbours.append([next_row, next_col + 1, ms_prev[next_row][next_col + 1]])
+        except IndexError:
+            pass
+
+        try:
+            neighbours.append([next_row - 1, next_col, ms_prev[next_row - 1][next_col]])
+        except IndexError:
+            pass
+
+        sad_values = [get_sad(neighbour[2], m_next) for neighbour in neighbours]
+        sad_min = min(sad_values)
+
+        min_index = sad_values.index(sad_min)
+        next_row, next_col, m_next = neighbours[min_index]
+
+        step /= 2
+        result = m_next
+
+    return result
 
 
 def fit_size(x):
     return window * ceil(x / window)
 
 
-video = cv2.VideoCapture('commercial2.mp4')
-_, ref_frame = video.read()
-_, target_frame = video.read()
+if __name__ == '__main__':
+    video = cv2.VideoCapture('commercial2.mp4')
+    _, frame_prev = video.read()
+    _, frame_next = video.read()
 
-macroblocks_prev = get_macroblocks(ref_frame)
-macroblocks_next = get_macroblocks(target_frame)
+    frames = np.concatenate((frame_prev, frame_next), axis=1)
+    cv2.imshow('Frames', frames)
 
-macroblock_count = len(macroblocks_prev)
+    macroblocks_prev = get_macroblocks(frame_prev)
+    macroblocks_next = get_macroblocks(frame_next)
 
-for i in range(macroblock_count):
-    print(get_sad(macroblocks_prev[i], macroblocks_next[i]))
+    for row, macroblocks in enumerate(macroblocks_next):
+        for col, macroblock in enumerate(macroblocks):
+            match = get_best_match(macroblocks_prev, row, col, macroblock)
+            diff = cv2.absdiff(macroblock, match)
 
-# for macroblock in macroblocks:
-#     cv2.imshow('Macroblocks', macroblock)
-#
-#     if cv2.waitKey(10) & 0xFF == ord('q'):
-#         break
+            padded = cv2.copyMakeBorder(macroblock, 0, 0, 0, 5, cv2.BORDER_CONSTANT, value=[255, 255, 255])
+            match_padded = cv2.copyMakeBorder(macroblock, 0, 0, 0, 5, cv2.BORDER_CONSTANT, value=[255, 255, 255])
+            image = np.concatenate((padded, match_padded, diff), axis=1)
 
-video.release()
-cv2.destroyAllWindows()
+            cv2.imshow('Macroblock best match', image)
+            cv2.waitKey(10)
+
+    video.release()
+    cv2.destroyAllWindows()
