@@ -1,12 +1,7 @@
 import cv2
 
-
-def get_error_frame(frame1, frame2):
-    return cv2.absdiff(frame1, frame2)
-
-
 if __name__ == '__main__':
-    video = cv2.VideoCapture('commercial2.mp4')
+    video = cv2.VideoCapture('video2.mp4')
     prev_frame = None
 
     while video.isOpened():
@@ -19,7 +14,7 @@ if __name__ == '__main__':
             prev_frame = cur_frame.copy()
             continue
 
-        error_frame = get_error_frame(cur_frame, prev_frame)
+        error_frame = cv2.absdiff(cur_frame, prev_frame)
         cv2.imshow('Error Frame', error_frame)
 
         if cv2.waitKey(60) & 0xFF == ord('q'):

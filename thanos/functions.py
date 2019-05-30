@@ -1,12 +1,11 @@
-import cv2
-import numpy as np
 from math import ceil
+import numpy as np
 
 window = 16
 k = 16
 
 
-def get_macroblocks(frame):
+def frame_to_macroblocks(frame):
     old_width = frame.shape[0]
     width = fit_size(old_width)
     old_height = frame.shape[1]
@@ -29,6 +28,19 @@ def get_macroblocks(frame):
         macroblocks.append(row)
 
     return macroblocks
+
+
+def macroblocks_to_frame(macroblocks):
+    rows = []
+    for row in macroblocks:
+        rows.append(np.concatenate([macroblock for macroblock in row], axis=1))
+
+    frame = np.concatenate([row for row in rows], axis=0)
+    return frame
+
+
+def fit_size(x):
+    return window * ceil(x / window)
 
 
 def get_sad(m_prev, m_next):
@@ -106,34 +118,3 @@ def get_best_match(ms_prev, next_row, next_col, m_next):
         result = m_next
 
     return result
-
-
-def fit_size(x):
-    return window * ceil(x / window)
-
-
-if __name__ == '__main__':
-    video = cv2.VideoCapture('commercial2.mp4')
-    _, frame_prev = video.read()
-    _, frame_next = video.read()
-
-    frames = np.concatenate((frame_prev, frame_next), axis=1)
-    cv2.imshow('Frames', frames)
-
-    macroblocks_prev = get_macroblocks(frame_prev)
-    macroblocks_next = get_macroblocks(frame_next)
-
-    for row, macroblocks in enumerate(macroblocks_next):
-        for col, macroblock in enumerate(macroblocks):
-            match = get_best_match(macroblocks_prev, row, col, macroblock)
-            diff = cv2.absdiff(macroblock, match)
-
-            padded = cv2.copyMakeBorder(macroblock, 0, 0, 0, 5, cv2.BORDER_CONSTANT, value=[255, 255, 255])
-            match_padded = cv2.copyMakeBorder(macroblock, 0, 0, 0, 5, cv2.BORDER_CONSTANT, value=[255, 255, 255])
-            image = np.concatenate((padded, match_padded, diff), axis=1)
-
-            cv2.imshow('Macroblock best match', image)
-            cv2.waitKey(10)
-
-    video.release()
-    cv2.destroyAllWindows()
