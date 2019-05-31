@@ -1,7 +1,10 @@
 import cv2
+import pkg_resources
 
 if __name__ == '__main__':
-    video = cv2.VideoCapture('../videos/video1.mp4')
+    file = pkg_resources.resource_filename(__name__, '../videos/video1.mp4')
+    video = cv2.VideoCapture(file)
+
     prev_frame = None
 
     while video.isOpened():

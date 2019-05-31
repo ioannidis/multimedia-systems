@@ -1,9 +1,13 @@
 import cv2
 import numpy as np
+import pkg_resources
+
 from codebase.functions import frame_to_macroblocks, get_best_match
 
 if __name__ == '__main__':
-    video = cv2.VideoCapture('../videos/video1.mp4')
+    file = pkg_resources.resource_filename(__name__, '../videos/video1.mp4')
+    video = cv2.VideoCapture(file)
+
     _, frame_prev = video.read()
     _, frame_next = video.read()
 
