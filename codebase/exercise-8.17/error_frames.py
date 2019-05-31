@@ -17,8 +17,7 @@ if __name__ == '__main__':
         error_frame = cv2.absdiff(cur_frame, prev_frame)
         cv2.imshow('Error Frames', error_frame)
 
-        if cv2.waitKey(60):
-            break
+        cv2.waitKey(60)
 
         prev_frame = cur_frame.copy()
 
