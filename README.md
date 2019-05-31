@@ -5,6 +5,9 @@ How to run and setup the project:
 1. CD into the parent directory (multimedia_systems)
 
 2. Create and activate a virtual environment in Python 3.7
+    - pip3 install virtualenv
+    - virtualenv -p <python executable> <env name>
+    - source ./<env name>/bin/activate
 
 3. Locally install the 'codebase' package:
    - pip install -e .
