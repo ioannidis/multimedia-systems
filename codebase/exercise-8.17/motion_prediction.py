@@ -1,14 +1,14 @@
 import cv2
 import numpy as np
-from functions import frame_to_macroblocks, get_best_match
+from codebase.functions import frame_to_macroblocks, get_best_match
 
 if __name__ == '__main__':
-    video = cv2.VideoCapture('video2.mp4')
+    video = cv2.VideoCapture('../videos/video1.mp4')
     _, frame_prev = video.read()
     _, frame_next = video.read()
 
-    frames = np.concatenate((frame_prev, frame_next), axis=1)
-    cv2.imshow('Frames', frames)
+    frames = np.concatenate((frame_prev, frame_next), axis=0)
+    cv2.imshow('First and second frame', frames)
 
     macroblocks_prev = frame_to_macroblocks(frame_prev)
     macroblocks_next = frame_to_macroblocks(frame_next)

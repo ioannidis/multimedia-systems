@@ -1,7 +1,7 @@
 import cv2
 
 if __name__ == '__main__':
-    video = cv2.VideoCapture('video2.mp4')
+    video = cv2.VideoCapture('../videos/video1.mp4')
     prev_frame = None
 
     while video.isOpened():
@@ -15,9 +15,9 @@ if __name__ == '__main__':
             continue
 
         error_frame = cv2.absdiff(cur_frame, prev_frame)
-        cv2.imshow('Error Frame', error_frame)
+        cv2.imshow('Error Frames', error_frame)
 
-        if cv2.waitKey(60) & 0xFF == ord('q'):
+        if cv2.waitKey(60):
             break
 
         prev_frame = cur_frame.copy()

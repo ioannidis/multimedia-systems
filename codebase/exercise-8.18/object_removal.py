@@ -1,9 +1,9 @@
 import cv2
-from functions import frame_to_macroblocks, macroblocks_to_frame
 import numpy as np
+from codebase.functions import frame_to_macroblocks, macroblocks_to_frame
 
 if __name__ == '__main__':
-    video = cv2.VideoCapture('video1.mp4')
+    video = cv2.VideoCapture('../videos/video2.mp4')
 
     macroblocks_prev = None
 
@@ -39,7 +39,7 @@ if __name__ == '__main__':
         image = np.concatenate((before, after), axis=1)
 
         macroblocks_prev = macroblocks
-        cv2.imshow('Frame', image)
+        cv2.imshow('Before and after frames', image)
         cv2.waitKey(30)
 
     video.release()
