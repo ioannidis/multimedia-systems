@@ -1,5 +1,4 @@
 import cv2
-import numpy as np
 import pkg_resources
 
 from codebase.functions import frame_to_macroblocks, macroblocks_to_frame
@@ -8,7 +7,10 @@ if __name__ == '__main__':
     file = pkg_resources.resource_filename(__name__, '../videos/video2.mp4')
     video = cv2.VideoCapture(file)
 
-    macroblocks_prev = None
+    has_prev = False
+    ms_prev_16 = None
+    ms_prev_8 = None
+    ms_prev_4 = None
 
     while video.isOpened():
         _, frame = video.read()
@@ -16,33 +18,39 @@ if __name__ == '__main__':
         if frame is None:
             break
 
-        macroblocks = frame_to_macroblocks(frame)
-        macroblocks_original = macroblocks.copy()
+        ms_16 = frame_to_macroblocks(frame, window=16)
+        ms_8 = frame_to_macroblocks(frame, window=8)
+        ms_4 = frame_to_macroblocks(frame, window=4)
 
-        if macroblocks_prev is None:
-            macroblocks_prev = macroblocks
+        if not has_prev:
+            has_prev = True
+            ms_prev_16 = ms_16
+            ms_prev_8 = ms_8
+            ms_prev_4 = ms_4
             continue
 
-        macroblocks[9] = macroblocks_prev[9]
-        macroblocks[10] = macroblocks_prev[10]
-        macroblocks[11] = macroblocks_prev[11]
-        macroblocks[12] = macroblocks_prev[12]
-        macroblocks[13] = macroblocks_prev[13]
-        macroblocks[14] = macroblocks_prev[14]
-        macroblocks[15] = macroblocks_prev[15]
-        macroblocks[16] = macroblocks_prev[16]
-        macroblocks[17] = macroblocks_prev[17]
-        macroblocks[18] = macroblocks_prev[18]
-        macroblocks[19] = macroblocks_prev[19]
-        macroblocks[20] = macroblocks_prev[20]
-        macroblocks[21] = macroblocks_prev[21]
+        for i in range(9, 22):
+            ms_16[i] = ms_prev_16[i]
 
-        before = macroblocks_to_frame(macroblocks_original)
-        after = macroblocks_to_frame(macroblocks)
-        image = np.concatenate((before, after), axis=1)
+        for j in range(19, 45):
+            ms_8[j] = ms_prev_8[j]
 
-        macroblocks_prev = macroblocks
-        cv2.imshow('Before and after frames', image)
+        for k in range(39, 91):
+            ms_4[k] = ms_prev_4[k]
+
+        ms_frame_16 = macroblocks_to_frame(ms_16)
+        ms_frame_8 = macroblocks_to_frame(ms_8)
+        ms_frame_4 = macroblocks_to_frame(ms_4)
+
+        cv2.imshow('Original Video', frame)
+        cv2.imshow('Object removal (window=16)', ms_frame_16)
+        cv2.imshow('Object removal (window=8)', ms_frame_8)
+        cv2.imshow('Object removal (window=4)', ms_frame_4)
+
+        ms_prev_16 = ms_16
+        ms_prev_8 = ms_8
+        ms_prev_4 = ms_4
+
         cv2.waitKey(30)
 
     video.release()

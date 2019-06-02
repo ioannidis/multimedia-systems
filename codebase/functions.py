@@ -1,11 +1,8 @@
 from math import ceil
 import numpy as np
 
-window = 16
-k = 16
 
-
-def frame_to_macroblocks(frame):
+def frame_to_macroblocks(frame, window=16):
     # Tweak the width and height of the frame so we can extract macroblocks of specific size.
     old_width = frame.shape[0]
     width = fit_size(old_width)
@@ -48,12 +45,12 @@ def macroblocks_to_frame(macroblocks):
     return frame
 
 
-def fit_size(x):
+def fit_size(x, window=16):
     # Find the closest integer based on x that is divisible by 16.
-    return window * ceil(x / window)
+    return (x + window) - (x % window)
 
 
-def get_sad(m_prev, m_next):
+def get_sad(m_prev, m_next, window=16):
     value = 0
 
     # Loop through every pixel of each frame.
@@ -72,7 +69,7 @@ def get_sad(m_prev, m_next):
     return value
 
 
-def get_best_match(ms_prev, next_row, next_col, m_next):
+def get_best_match(ms_prev, next_row, next_col, m_next, k=16):
     # Logarithmic search for motion estimation
 
     step = k / 2
