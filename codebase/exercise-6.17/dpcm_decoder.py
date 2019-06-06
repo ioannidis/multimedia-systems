@@ -13,7 +13,7 @@ first_frame = cv2.cvtColor(first_frame, cv2.COLOR_BGR2GRAY)
 video_codec = cv2.VideoWriter_fourcc(*'XVID')
 
 # Setup the output
-output = cv2.VideoWriter('decoded_video.mp4', video_codec, int(video.get(5)), (int(video.get(3)), int(video.get(4))), False)
+output = cv2.VideoWriter('decoded_video.avi', video_codec, int(video.get(5)), (int(video.get(3)), int(video.get(4))), False)
 output.write(first_frame)
 
 frame_num = 0

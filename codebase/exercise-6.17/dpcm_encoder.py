@@ -3,7 +3,7 @@ import cv2
 quantization_value = 10
 
 # Load video
-video = cv2.VideoCapture('multimedia_video_1.mp4')
+video = cv2.VideoCapture('../videos/video1.mp4')
 
 # Load the first frame of the video
 success, first_frame = video.read()
