@@ -3,8 +3,12 @@ import numpy as np
 import cv2
 import os
 
+print("Please wait, process may take a while!")
+
+# Storage path of the exported video frames
 FRAMES_PATH = "./video_frames"
 
+# Create video_frames directory
 if not os.path.exists("video_frames"):
     os.makedirs("video_frames")
 
@@ -16,6 +20,7 @@ success, first_frame = video.read()
 first_frame = cv2.cvtColor(first_frame, cv2.COLOR_BGR2GRAY)
 cv2.imwrite(FRAMES_PATH + "/frame_%d.jpg" % 0, first_frame)
 
+# While video is open and there are available frames, export them
 count = 1
 while video.isOpened():
     success, current_frame = video.read()
@@ -29,10 +34,12 @@ while video.isOpened():
     cv2.imwrite(FRAMES_PATH + "/frame_%d.jpg" % count, current_frame)
     count += 1
 
-# Encode images
+# Quantization value
 quantization_value = 10
+
 output =  ""
 
+# Encode images
 for i in range(count):
     # Open image
     bw_image = Image.open(FRAMES_PATH + "/frame_%d.jpg" % i)
@@ -71,6 +78,8 @@ for i in range(count):
     output += encoded_image + ",".join(encoded_list) + "#"
 
 # Export string to file
-file = open('compressed_mona_lisa', 'w')
+file = open('rle_compressed_frames', 'w')
 file.write(output)
 file.close()
+
+print("Video encoding is done!")
