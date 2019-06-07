@@ -61,7 +61,7 @@ for image_string in encoded_images_list:
 
 # Merge all decoded frames and reconstruct the video
 video_codec = cv2.VideoWriter_fourcc(*'DIVX')
-video = cv2.VideoWriter("decoded_video.avi", video_codec, 30,(int(video_dimensions[0]), int(video_dimensions[1])))
+video = cv2.VideoWriter("rle_modified_decoded_video.avi", video_codec, 30,(int(video_dimensions[0]), int(video_dimensions[1])))
 
 for i in range(count):
     a = cv2.imread(DECODED_FRAMES_PATH + "/frame_" + str(i) + ".jpg")
@@ -69,4 +69,4 @@ for i in range(count):
 
 video.release()
 
-print("Video released as 'decoded_video.avi'!")
+print("Video released as 'rle_modified_decoded_video.avi'!")
