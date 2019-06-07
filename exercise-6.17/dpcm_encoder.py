@@ -1,5 +1,7 @@
 import cv2
 
+print("Please wait, process may take a while!")
+
 quantization_value = 10
 
 # Load video
@@ -13,7 +15,7 @@ first_frame = cv2.cvtColor(first_frame, cv2.COLOR_BGR2GRAY)
 video_codec = cv2.VideoWriter_fourcc(*'XVID')
 
 # Setup the output
-output = cv2.VideoWriter('encoded_video.mp4', video_codec, int(video.get(5)), (int(video.get(3)), int(video.get(4))), False)
+output = cv2.VideoWriter('dpcm_encoded_video.avi', video_codec, int(video.get(5)), (int(video.get(3)), int(video.get(4))), False)
 output.write(first_frame)
 
 frame_num = 0
@@ -46,3 +48,5 @@ while video.isOpened():
 
 video.release()
 output.release()
+
+print("Video encoding is done!")
