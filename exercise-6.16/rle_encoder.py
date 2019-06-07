@@ -4,7 +4,11 @@ import numpy as np
 quantization_value = 10
 
 # Convert image to black & white
-bw_image = Image.open("../images/logo.jpg").convert("L")
+# Load image with many colors
+bw_image = Image.open("../images/mona-lisa.jpg").convert("L")
+
+# Load image with two colors
+# bw_image = Image.open("../images/mona-lisa.jpg").convert("L")
 
 # Image as np array
 image_as_array = np.array(bw_image, dtype=int)
@@ -40,6 +44,6 @@ if counter > 0:
 output = output + ",".join(encoded_list)
 
 # Export string to file
-file = open('compressed_mona_lisa', 'w')
+file = open('rle_compressed_image', 'w')
 file.write(output)
 file.close()
