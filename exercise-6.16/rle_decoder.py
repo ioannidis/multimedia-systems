@@ -31,5 +31,5 @@ reverse_quantization_image = np.array(arr, dtype=int) * quantization_value
 image_as_2d_array = np.reshape(reverse_quantization_image, (int(image_dimensions[0]), int(image_dimensions[1])))
 
 # Reconstruct and display image
-decoded_image = Image.fromarray(image_as_2d_array)
+decoded_image = Image.fromarray((image_as_2d_array).astype(np.uint8))
 decoded_image.show()

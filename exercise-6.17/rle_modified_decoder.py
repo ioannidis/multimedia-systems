@@ -54,7 +54,7 @@ for image_string in encoded_images_list:
     image_as_2d_array = np.reshape(reverse_quantization_image, (int(image_dimensions[0]), int(image_dimensions[1])))
 
     # Reconstruct and display image
-    decoded_image = Image.fromarray(image_as_2d_array)
+    decoded_image = Image.fromarray((image_as_2d_array).astype(np.uint8))
     decoded_image.convert('RGB').save(DECODED_FRAMES_PATH + "/frame_%d.jpg" % count)
 
     count += 1
