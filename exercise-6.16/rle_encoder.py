@@ -8,7 +8,7 @@ quantization_value = 10
 bw_image = Image.open("../images/mona-lisa.jpg").convert("L")
 
 # Load image with two colors
-# bw_image = Image.open("../images/mona-lisa.jpg").convert("L")
+# bw_image = Image.open("../images/logo.jpg").convert("L")
 
 # Image as np array
 image_as_array = np.array(bw_image, dtype=int)
